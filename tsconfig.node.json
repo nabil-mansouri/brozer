@@ -1,0 +1,18 @@
+{
+  "extends": "@electron-toolkit/tsconfig/tsconfig.node.json",
+  "include": [
+    "electron.vite.config.*",
+    "src/generated/*",
+    "src/common/*",
+    "src/main/*",
+    "src/preload/*",
+    "src/common/browser_controls_interface.ts",
+    "src/common/browser_reply_interface.ts",
+    "scripts/*"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "noFallthroughCasesInSwitch": true,
+    "types": ["electron-vite/node"]
+  }
+}

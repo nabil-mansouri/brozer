@@ -1,0 +1,370 @@
+syntax = "proto3";
+
+message BrowserControlMessage {
+    oneof msg {
+        BrowserControlReady onControlReady = 1;
+        BrowserControlUrlChanged onUrlChange = 2;
+        BrowserControlUrlChanged onUrlEnter = 3;
+        BrowserControlNewTab onNewTab = 4;
+        BrowserControlTab onSwitchTab = 5;
+        BrowserControlAction onAction = 6;
+        BrowserPrintOption onPrint = 7;
+        BrowserSavePageOption onSave = 8;
+        BrowserCaptureOption onCapture = 9;
+        BrowserSaveDialogOption onSaveDialog = 10;
+        BrowserOpenDialogOptions onOpenDialog = 11;
+        BrowserCertificateTrustDialogOptions onShowCertDialog = 12;
+        BrowserControlAudio onAudio = 13;
+        BrowserControlContent onContent = 14;
+        BrowserControlDownload onDownload = 15;
+        BrowserControlFind onFind = 16;
+        BrowserControlStopFind onStopFind = 17;
+        BrowserControlTab onCloseTab = 18;
+        BrowserControlNewModal onNewModal = 19;
+        BrowserControlUpdateModal onUpdateModal = 20;
+        int32 onCloseModal = 21;
+    };
+    optional string responseChannel = 100;
+}
+
+message BrowserControlResponse {
+    oneof msg {
+        BrowserCaptureResponse onCapture = 1;
+        BrowserSaveDialogReturnValue onSaveDialog = 2;
+        BrowserOpenDialogReturnValue onOpenDialog = 3;
+        bool onShowCertificate = 4;
+        BrowserFindResponse onFind = 5;
+    }
+}
+
+message BrowserCaptureResponse{
+    string url = 1;
+}
+
+message BrowserFindResponse{
+    optional int32 requestId = 1;
+}
+
+message BrowserSaveDialogReturnValue {
+    bool canceled = 1;
+    optional string filePath = 2;
+    optional string bookmark = 3;
+}
+
+message BrowserOpenDialogReturnValue {
+    bool canceled = 1;
+    repeated string filePaths = 2;
+    repeated string bookmarks = 3;
+  }
+
+message BrowserControlReady {
+    repeated string jsAttached = 1;
+}
+
+message BrowserControlUrlChanged {
+    string url = 1;
+}
+
+message BrowserControlNewTab {
+    string url = 1;
+    optional string partition = 2;
+    optional bool devTools = 3;
+    optional bool ifNoViews = 4;
+    optional bool hideNavbar = 5;
+}
+
+message BrowserControlUpdateModal {
+    BrowserControlNewModal opts = 1;
+    int32 id = 2;
+}
+message BrowserControlNewModal {
+    optional int32 width = 1;
+    optional int32 height = 2;
+    optional int32 x = 3;
+    optional int32 y = 4;
+    optional bool useContentSize = 5;
+    optional bool center = 6;
+    optional int32 minWidth = 7;
+    optional int32 minHeight = 8;
+    optional int32 maxWidth = 9;
+    optional int32 maxHeight = 10;
+    optional bool alwaysOnTop = 11;
+    optional bool show = 12;
+    optional string backgroundColor = 13;
+    optional int32 opacity = 14;
+    optional bool transparent = 15;
+    optional bool modal = 16;
+    optional bool hasShadow = 17;
+    optional bool xFromRight = 18;
+    optional bool yFromBottom = 19;
+    string url = 30;
+}
+
+message BrowserControlTab {
+    int32 id = 1;
+}
+
+message BrowserControlAudio {
+    bool muted = 1;
+}
+
+message BrowserControlAction {
+    enum Action {
+        UNDEFINED = 0;
+        GOBACK = 1;
+        GOFORWARD = 2;
+        STOP = 3;
+        RELOAD = 4;
+        TOGGLE_MAXIMIZE = 5;
+        MAXIMIZE = 6;
+        MINIMIZE = 7;
+        TOGGLE_DEVTOOLS = 8;
+        ZOOM_IN = 9;
+        ZOOM_OUT = 10;
+        RESET_ZOOM = 11;
+        FORCE_RELOAD = 12;
+    }
+    Action action = 1;
+}
+
+message BrowserPrintOption {
+    optional bool silent = 1;
+    optional bool printBackground = 2;
+    optional string deviceName = 3;
+    optional bool color = 4;
+    optional bool landscape = 5;
+    optional int32 scaleFactor = 6;
+    optional int32 pagesPerSheet = 7;
+    optional bool collate = 8;
+    optional int32 copies = 9;
+    optional int32 fromPage = 10;
+    optional int32 toPage = 11;
+    optional string header = 12;
+    optional string footer = 13;
+    optional string pageSize = 14;
+}
+
+message BrowserSavePageOption {
+    string fullPath = 1;
+    SaveType saveType = 2;
+    enum SaveType {
+        HTMLOnly = 0;
+        HTMLComplete = 1;
+        MHTML = 2;
+    }
+}
+
+message BrowserCaptureOption {
+    optional string path = 1;
+}
+
+message BrowserFileFilter {
+    repeated string extensions = 1;
+    string name = 2;
+}
+
+message BrowserSaveDialogOption {
+    optional string title = 1;
+    optional string defaultPath = 2;
+    optional string buttonLabel = 3;
+    repeated BrowserFileFilter filters = 4;
+    optional string message = 5;
+    optional string nameFieldLabel = 6;
+    optional bool showsTagField = 7;
+    repeated SaveFileOption properties = 8;
+    optional bool securityScopedBookmarks = 9;
+    enum SaveFileOption {
+        dontAddToRecent = 0;
+        showHiddenFiles = 1;
+        createDirectory = 2;
+        treatPackageAsDirectory = 3;
+        showOverwriteConfirmation = 4;
+    }
+}
+
+message BrowserOpenDialogOptions {
+    optional string title = 1;
+    optional string defaultPath = 2;
+    optional string buttonLabel = 3;
+    repeated BrowserFileFilter filters = 4;
+    repeated OpenFileOption properties = 5;
+    optional string message = 6;
+    optional bool securityScopedBookmarks = 7;
+    enum OpenFileOption {
+        dontAddToRecent = 0;
+        openFile = 1;
+        openDirectory = 2;
+        multiSelections = 3;
+        showHiddenFiles = 4;
+        createDirectory = 5;
+        promptToCreate = 6;
+        noResolveAliases = 7;
+        treatPackageAsDirectory = 8;
+    }
+}
+message BrowserCertificateTrustDialogOptions {
+    BrowserCertificate certificate = 1;
+    optional string message = 2;
+}
+message BrowserCertificate {
+    optional string data = 1;
+    optional string fingerprint = 2;
+    optional BrowserCertificatePrincipal issuer = 3;
+    optional BrowserCertificate issuerCert = 4;
+    optional string issuerName = 5;
+    optional string serialNumber = 6;
+    optional BrowserCertificatePrincipal subject = 7;
+    optional string subjectName = 8;
+    optional int32 validExpiry = 9;
+    optional int32 validStart = 10;
+}
+message BrowserCertificatePrincipal {
+    optional string commonName = 1;
+    optional string country = 2;
+    optional string locality = 3;
+    repeated string organizations = 4;
+    repeated string organizationUnits = 5;
+    optional string state = 6;
+}
+
+message BrowserControlContent{ 
+    optional string relativeFile = 1; 
+    optional string absoluteFile = 2; 
+    optional string httpFile = 3; 
+}
+
+message BrowserControlDownload{ 
+    enum Action {
+        resume = 0;
+        pause = 1;
+        interrupt= 2;
+    }
+    string id = 1;
+    Action action = 2;
+}
+message BrowserControlFind {
+    string searchText = 1;
+    optional bool forward = 2;
+    optional bool findNext = 3;
+    optional bool matchCase = 4;
+}
+message BrowserControlStopFind {
+    enum Action {
+        activateSelection = 0;
+        clearSelection = 1;
+        keepSelection = 2;
+    }
+    Action action = 1;
+}
+
+message BrowserState {
+    repeated BrowserStateView views = 1;
+    optional int32 currentViewId = 2;
+    repeated BrowserFile downloads = 3;
+    optional BrowserFoundResult foundResult = 4;
+    repeated string jsAttached = 5;
+    repeated BrowserWindowInfo windows = 6;
+}
+
+message BrowserWindowInfo {
+    int32 id = 1;
+    string url = 2;
+    bool isModal = 3;
+    bool isVisible = 4;
+    bool isFocused = 5;
+}
+
+message BrowserFoundResult {
+    message Rectangle {
+        int32 height = 1;
+        int32 width = 2;
+        int32 x = 3;
+        int32 y = 4;
+    }
+    int32 requestId = 1;
+    int32 activeMatchOrdinal = 2;
+    int32 matches = 3;
+    Rectangle selectionArea = 4;
+    bool finalUpdate = 5;
+}
+message BrowserFile {
+    enum State {
+        UNDEFINED = 0;
+        progressing = 1;
+        completed = 2;
+        cancelled = 3;
+        interrupted = 4;
+    }
+    string id = 1; 
+    string url = 2;
+    string filePath = 3;
+    int32 startTime = 4;
+    string lastUpdate = 5;
+    int32 totalBytes = 6;
+    int32 receivedBytes = 7;
+    string mimeType = 8;
+    bool paused = 9;
+    State state = 10;
+    string fileName = 11; 
+}
+message BrowserStateView {
+    enum CertStatus {
+        UNDEFINED = 0;
+        OK = 1;
+        CERT_REVOKED = 2;
+    }
+    enum MediaState {
+        UNDEFINED_MEDIA = 0;
+        pause = 1;
+        play = 2;
+    }
+    string title = 1;
+    string href = 2;
+    string url = 3;
+    string host = 4;
+    bool isLoading = 5;
+    string favicon = 6;
+    int32 viewId = 7;
+    bool canGoBack = 8;
+    bool canGoForward = 9;
+    optional string certError = 10; 
+    optional int32 certErrAt = 11;
+    optional BrowserCertificate cert = 12;
+    optional BrowserCustomCert certDetails = 13; 
+    optional CertStatus certStatus = 14;
+    optional MediaState mediaState = 15; 
+    optional bool isAudible = 16;
+    optional bool isMuted = 17;
+    // https://source.chromium.org/chromium/chromium/src/+/main:net/base/net_error_list.h;l=29
+    optional int32 errCode = 18;
+    optional string errDesc = 19;
+    optional int32 errAt = 20;
+    optional bool isCrashed = 21;
+    optional bool hideNavbar = 22;
+    optional string urlBeforeResolve = 23;
+    optional string urlAfterResolve = 24;
+}
+
+message BrowserCustomCert {
+    message Subject {
+        optional string commonName = 1;
+        optional string countryName = 2;
+        optional string localityName = 3;
+        optional string organizationName = 4;
+        optional string stateOrProvinceName = 5;
+    }
+    message Issuer {
+        optional string commonName = 1;
+        optional string countryName = 2;
+        optional string organizationName = 3;
+    }
+    optional string publicModulus = 1;
+    optional string publicExponent = 2;
+    optional Subject subject = 3;
+    optional Issuer issuer = 4;
+    optional string serial = 5;
+    optional string notBefore = 6; 
+    optional string notAfter = 7;
+    repeated string altNames = 8;
+    repeated string ocspList = 9;
+}
